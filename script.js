@@ -30,10 +30,26 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
 
-var x;
+var countdown = document.getElementById("countdown");
+var countdownInterval = null;
+var endtime;
+var timeLeft;
+var speechInterval;
 var ideograms = [];
+var isPaused = false;
 
 function start() {
+
+    if(countdownInterval != null) {
+        window.clearInterval(countdownInterval);
+        window.clearInterval(speechInterval);
+        countdownInterval = null;
+        timeLeft = time_remaining(endtime).total;
+        isPaused = true;
+        document.getElementById("startBtn").innerHTML = 'Resume<i class="material-icons right">play_arrow</i>';
+        return;
+    }
+    
     var checked = document.getElementsByName('ideogram');
     for(var i = 0; i < checked.length; i++) {
         if(checked[i].checked) {
@@ -48,12 +64,60 @@ function start() {
     if(ideograms.length < 2) {
         M.toast({html: 'Select at least 2 ideograms!'})
     } else {
-        var time = parseFloat(document.querySelector("#speed").querySelector("select").selectedOptions[0].value) * 1000
-        x = window.setInterval(randomize, time);
+        document.getElementById("stopBtn").classList.remove("scale-out");
+        
+        document.getElementById("startBtn").innerHTML = 'Pause<i class="material-icons right">pause</i>';
+
+        if(!isPaused) {
+            var time = document.getElementById("timer").value;
+            var current_time = Date.parse(new Date());
+            endtime = new Date(current_time + time*60*1000);
+
+            countdown.style.display = "block";
+            countdown.classList.remove("scale-out");
+        } else {
+            var current_time = Date.parse(new Date());
+            endtime = new Date(current_time + timeLeft);
+        }
+
+        isPaused = false;
+
+        var timeBetweenIdeograms = parseFloat(document.querySelector("#speed").querySelector("select").selectedOptions[0].value) * 1000
+        speechInterval = window.setInterval(randomizeIdeogram, timeBetweenIdeograms);
+        countdownInterval = window.setInterval(update_clock, 1000);
+
     }
 }
 
-function randomize() {
+function stop() {
+    window.clearInterval(countdownInterval);
+    countdownInterval = null;
+    window.clearInterval(speechInterval);
+
+    countdown.classList.add("scale-out");
+    countdown.style.display = "none";
+
+    document.getElementById("stopBtn").classList.add("scale-out");
+    document.getElementById("startBtn").innerHTML = 'Start<i class="material-icons right">send</i>';
+}
+
+function update_clock(){
+    var t = time_remaining(endtime);
+    countdown.innerHTML = t.minutes+':'+t.seconds;
+    if(t.total<=0){ window.clearInterval(countdownInterval); }
+}
+
+//From https://codepen.io/yaphi1/pen/QbzrQP
+function time_remaining(endtime){
+	var t = Date.parse(endtime) - Date.parse(new Date());
+	var seconds = Math.floor( (t/1000) % 60 );
+	var minutes = Math.floor( (t/1000/60) % 60 );
+	var hours = Math.floor( (t/(1000*60*60)) % 24 );
+	var days = Math.floor( t/(1000*60*60*24) );
+	return {'total':t, 'days':days, 'hours':hours, 'minutes':minutes, 'seconds':seconds};
+}
+
+function randomizeIdeogram() {
     var rand = Math.floor(Math.random() * ideograms.length);
     var utterThis = new SpeechSynthesisUtterance(ideograms[rand]);
     utterThis.voice = voices[voiceSelect.selectedOptions[0].getAttribute("voice-index")]
