@@ -1,3 +1,22 @@
 body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
     background-color: #fafafa;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.material-icons.md-18 { font-size: 18px; }
+
+.brand-logo .small {
+    top: 24px;
+    left: 0px;
+    position: absolute;
+}
+
+.small {
+    font-size: 12px;
 }
