@@ -1,10 +1,22 @@
 var voiceSelect = document.querySelector("#lang").querySelector('select')
-var voices = window.speechSynthesis.getVoices();
+var voices = [];
 
-//so we can find custom ideograms
+//so we can find custom ideograms later
 var chipInstances;
 
 document.addEventListener('DOMContentLoaded', function() {
+    elems = document.querySelectorAll('.chips');
+    chipInstances = M.Chips.init(elems, {
+        placeholder: 'Enter ideogram',
+        secondaryPlaceholder: '+Ideogram',
+      });
+});
+
+/* This function is needed because the voice list is
+ loaded asynchronously by the browser.
+*/
+function populateVoiceList() {
+    voices = window.speechSynthesis.getVoices();
 
     //Populate voice (language) list
     for(i = 0; i < voices.length ; i++) {
@@ -19,15 +31,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-
     var elems = document.querySelectorAll('select');
-    var instances = M.FormSelect.init(elems);
-    elems = document.querySelectorAll('.chips');
-    chipInstances = M.Chips.init(elems, {
-        placeholder: 'Enter ideogram',
-        secondaryPlaceholder: '+Ideogram',
-      });
-  });
+    M.FormSelect.init(elems);
+}
+
+populateVoiceList();
+if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = populateVoiceList;
+}
 
 
 var countdown = document.getElementById("countdown");
