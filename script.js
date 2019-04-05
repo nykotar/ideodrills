@@ -1,4 +1,4 @@
-var voiceSelect = document.querySelector('select')
+var voiceSelect = document.querySelector("#lang").querySelector('select')
 var voices = window.speechSynthesis.getVoices();
 
 //so we can find custom ideograms
@@ -48,7 +48,8 @@ function start() {
     if(ideograms.length < 2) {
         M.toast({html: 'Select at least 2 ideograms!'})
     } else {
-        x = window.setInterval(randomize, 1200);
+        var time = parseFloat(document.querySelector("#speed").querySelector("select").selectedOptions[0].value) * 1000
+        x = window.setInterval(randomize, time);
     }
 }
 
