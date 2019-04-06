@@ -61,6 +61,7 @@ function start() {
         return;
     }
     
+    ideograms = [];
     var checked = document.getElementsByName('ideogram');
     for(var i = 0; i < checked.length; i++) {
         if(checked[i].checked) {
@@ -115,7 +116,11 @@ function stop() {
 function update_clock(){
     var t = time_remaining(endtime);
     countdown.innerHTML = t.minutes+':'+t.seconds;
-    if(t.total<=0){ window.clearInterval(countdownInterval); }
+    if(t.total<=0){ 
+        window.clearInterval(countdownInterval);
+        window.clearInterval(speechInterval);
+        countdownInterval = null;
+    }
 }
 
 //From https://codepen.io/yaphi1/pen/QbzrQP
