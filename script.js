@@ -1,16 +1,16 @@
-var voiceSelect = document.querySelector("#lang").querySelector('select')
-var voices = [];
-
 //so we can find custom ideograms later
 var chipInstances;
 
 document.addEventListener('DOMContentLoaded', function() {
-    elems = document.querySelectorAll('.chips');
+    var elems = document.querySelectorAll('.chips');
     chipInstances = M.Chips.init(elems, {
         placeholder: 'Enter ideogram',
         secondaryPlaceholder: '+Ideogram',
       });
 });
+
+var voiceSelect = document.querySelector("#lang").querySelector('select')
+var voices = [];
 
 /* This function is needed because the voice list is
  loaded asynchronously by the browser.
@@ -41,23 +41,29 @@ if (speechSynthesis.onvoiceschanged !== undefined) {
 }
 
 
+var ideograms = [];
+
 var countdown = document.getElementById("countdown");
 var countdownInterval = null;
 var endtime;
 var timeLeft;
 var speechInterval;
-var ideograms = [];
+
 var isPaused = false;
+
+var startBtn = document.getElementById("startBtn");
+var stopBtn = document.getElementById("stopBtn");
 
 function start() {
 
+    //If its running we pause
     if(countdownInterval != null) {
         window.clearInterval(countdownInterval);
         window.clearInterval(speechInterval);
         countdownInterval = null;
         timeLeft = time_remaining(endtime).total;
         isPaused = true;
-        document.getElementById("startBtn").innerHTML = 'Resume<i class="material-icons right">play_arrow</i>';
+        startBtn.innerHTML = 'Resume<i class="material-icons right">play_arrow</i>';
         return;
     }
     
@@ -73,12 +79,10 @@ function start() {
         ideograms.push(chipInstances[0].chipsData[i].tag);
     }
 
-    if(ideograms.length < 2) {
-        M.toast({html: 'Select at least 2 ideograms!'})
-    } else {
-        document.getElementById("stopBtn").classList.remove("scale-out");
-        
-        document.getElementById("startBtn").innerHTML = 'Pause<i class="material-icons right">pause</i>';
+    if(ideograms.length >= 2) {
+
+        stopBtn.classList.remove("scale-out");
+        startBtn.innerHTML = 'Pause<i class="material-icons right">pause</i>';
 
         if(!isPaused) {
             var time = document.getElementById("timer").value;
@@ -97,7 +101,8 @@ function start() {
         var timeBetweenIdeograms = parseFloat(document.querySelector("#speed").querySelector("select").selectedOptions[0].value) * 1000
         speechInterval = window.setInterval(randomizeIdeogram, timeBetweenIdeograms);
         countdownInterval = window.setInterval(update_clock, 1000);
-
+    } else {
+        M.toast({html: 'Select at least 2 ideograms!'})
     }
 }
 
@@ -109,8 +114,8 @@ function stop() {
     countdown.classList.add("scale-out");
     countdown.style.display = "none";
 
-    document.getElementById("stopBtn").classList.add("scale-out");
-    document.getElementById("startBtn").innerHTML = 'Start<i class="material-icons right">send</i>';
+    stopBtn.classList.add("scale-out");
+    startBtn.innerHTML = 'Start<i class="material-icons right">send</i>';
 }
 
 function update_clock(){
@@ -125,12 +130,14 @@ function update_clock(){
 
 //From https://codepen.io/yaphi1/pen/QbzrQP
 function time_remaining(endtime){
-	var t = Date.parse(endtime) - Date.parse(new Date());
+    var t = Date.parse(endtime) - Date.parse(new Date());
 	var seconds = Math.floor( (t/1000) % 60 );
-	var minutes = Math.floor( (t/1000/60) % 60 );
-	var hours = Math.floor( (t/(1000*60*60)) % 24 );
-	var days = Math.floor( t/(1000*60*60*24) );
-	return {'total':t, 'days':days, 'hours':hours, 'minutes':minutes, 'seconds':seconds};
+    var minutes = Math.floor( (t/1000/60) % 60 );
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+	//var hours = Math.floor( (t/(1000*60*60)) % 24 );
+	//var days = Math.floor( t/(1000*60*60*24) );
+	return {'total':t, 'minutes':minutes, 'seconds':seconds};
 }
 
 function randomizeIdeogram() {

@@ -89,10 +89,10 @@
                                         </div>
                                         <span class="card-title black-text">Settings</span>
                                         <div class="row">
-                                            <div class="input-field col s3" id="lang">
+                                            <div class="input-field col s4" id="lang">
                                                 <select>
                                                 </select>
-                                                <label>Language</label>
+                                                <label>Voice Language</label>
                                             </div>
                                             <div class="input-field col s3" id="speed">
                                                 <select>
@@ -110,12 +110,16 @@
                                             </div> 
                                         </div>
                                         <div class="row">
-                                            <h1 class="center-align scale-transition scale-out" id="countdown" style="display:none">0:00</h1>
+                                            <h1 class="center-align scale-transition scale-out" id="countdown" style="display:none">00:00</h1>
                                         </div>
                                     </div>
                                     <div class="card-action">
-                                        <button type="button" class="btn waves-effect waves-light scale-transition" id="startBtn" onclick="start()">Start<i class="material-icons right">send</i></button>
-                                        <button type="button" class="btn waves-effect waves-light scale-transition scale-out red darken-1" id="stopBtn" onclick="stop()">Stop<i class="material-icons right">stop</i></button>
+                                        <button type="button" class="btn waves-effect waves-light scale-transition" id="startBtn" onclick="start()">
+                                            Start<i class="material-icons right">send</i>
+                                        </button>
+                                        <button type="button" class="btn red darken-1 waves-effect waves-light scale-transition scale-out" id="stopBtn" onclick="stop()">
+                                            Stop<i class="material-icons right">stop</i>
+                                        </button>
                                     </div>
                                 </div>
                         </div>
