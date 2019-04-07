@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', function() {
         placeholder: 'Enter ideogram',
         secondaryPlaceholder: '+Ideogram',
       });
+
+    //Initialize sidenav for mobile
+    elems = document.querySelectorAll('.sidenav');
+    M.Sidenav.init(elems);
 });
 
 var voiceSelect = document.querySelector("#lang").querySelector('select')
