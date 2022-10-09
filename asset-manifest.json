@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/ideodrills/static/css/main.cd5cac74.css",
-    "main.js": "/ideodrills/static/js/main.23165b2b.js",
+    "main.js": "/ideodrills/static/js/main.c8ffc846.js",
     "index.html": "/ideodrills/index.html",
     "main.cd5cac74.css.map": "/ideodrills/static/css/main.cd5cac74.css.map",
-    "main.23165b2b.js.map": "/ideodrills/static/js/main.23165b2b.js.map"
+    "main.c8ffc846.js.map": "/ideodrills/static/js/main.c8ffc846.js.map"
   },
   "entrypoints": [
     "static/css/main.cd5cac74.css",
-    "static/js/main.23165b2b.js"
+    "static/js/main.c8ffc846.js"
   ]
 }
