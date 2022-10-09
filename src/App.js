@@ -8,12 +8,12 @@ import { useTimer } from "react-timer-hook";
 
 function App() {
   const [defaultIdeograms, setDefaultIdeograms] = useState({
-    Land: true,
-    Natural: true,
-    Manmade: true,
     Biological: true,
-    Space: false,
-    Structure: true,
+    Land: true,
+    Manmade: true,
+    "Motion Energy": true,
+    Natural: true,
+    "Space Air": true,
     Water: true,
   });
 
