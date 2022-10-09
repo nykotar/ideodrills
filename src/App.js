@@ -11,9 +11,9 @@ function App() {
     Biological: true,
     Land: true,
     Manmade: true,
-    "Motion Energy": true,
+    "Motion/Energy": true,
     Natural: true,
-    "Space Air": true,
+    "Space/Air": true,
     Water: true,
   });
 
@@ -93,7 +93,10 @@ function App() {
       setInterval(() => {
         speechSynthesis.cancel();
         let utterance = new SpeechSynthesisUtterance(
-          ideograms[Math.floor(Math.random() * ideograms.length)]
+          ideograms[Math.floor(Math.random() * ideograms.length)].replace(
+            "/",
+            " "
+          )
         );
         utterance.voice = settings.voices[settings.voice];
         speechSynthesis.speak(utterance);
