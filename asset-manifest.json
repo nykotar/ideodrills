@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/ideodrills/static/css/main.cd5cac74.css",
+    "main.js": "/ideodrills/static/js/main.23165b2b.js",
+    "index.html": "/ideodrills/index.html",
+    "main.cd5cac74.css.map": "/ideodrills/static/css/main.cd5cac74.css.map",
+    "main.23165b2b.js.map": "/ideodrills/static/js/main.23165b2b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.cd5cac74.css",
+    "static/js/main.23165b2b.js"
+  ]
+}

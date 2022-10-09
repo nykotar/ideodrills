@@ -1,5 +1,0 @@
-# ideodrills
-This is a website for ideogram training. There are some good websites out there for that purpose but they all suffer the same problem - the audios are pre-recorded. That approach yields a limited list of available ideograms, besides not allowing you to train with your own ideograms. Another recurrent issue is, lets say you need the "structure" ideogram, one website may have all the ideograms you need but "structure", while another website has "structure" but lacks "manmade", that you also need. Ideodrills works by synthesising text to speech using the Web Speech API, allowing you to train with any ideogram you like, and because the API uses your OS speech system, you can also train in your own language.
-
-## Notice about mobile devices
-As previously stated, the API uses the OS speech system to synthesize speech, so on mobile devices, only the system language may be available.
