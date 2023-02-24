@@ -65,6 +65,7 @@ function App() {
 
   // Load voices
   useEffect(() => {
+    setSettings({ ...settings, voices: speechSynthesis.getVoices() });
     speechSynthesis.onvoiceschanged = () => {
       setSettings({ ...settings, voices: speechSynthesis.getVoices() });
     };
