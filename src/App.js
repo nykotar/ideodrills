@@ -1,7 +1,6 @@
 import "./App.css";
 
 import { FaGithub, FaDiscord, FaReddit } from "react-icons/fa";
-import { SiKofi } from "react-icons/si";
 import { useState, useEffect } from "react";
 import Toggle from "./components/Toggle";
 import Badge from "./components/Badge";
@@ -123,9 +122,7 @@ function App() {
           </a>
           <ul className="flex items-center gap-6 text-2xl">
             <li>
-              <a href="https://ko-fi.com/nykotar">
-                <SiKofi />
-              </a>  
+              <a href='https://ko-fi.com/V7V53DIM0' target='_blank'><img height='36' style={{border:'0px',height:'36px'}} src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
             </li>
             <li>
               <a href="https://github.com/nykotar/ideodrills">
