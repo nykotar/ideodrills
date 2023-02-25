@@ -1,6 +1,7 @@
 import "./App.css";
 
 import { FaGithub, FaDiscord, FaReddit } from "react-icons/fa";
+import { SiKofi } from "react-icons/si";
 import { useState, useEffect } from "react";
 import Toggle from "./components/Toggle";
 import Badge from "./components/Badge";
@@ -121,6 +122,11 @@ function App() {
             IdeoDrills
           </a>
           <ul className="flex items-center gap-6 text-2xl">
+            <li>
+              <a href="https://ko-fi.com/nykotar">
+                <SiKofi />
+              </a>  
+            </li>
             <li>
               <a href="https://github.com/nykotar/ideodrills">
                 <FaGithub />
