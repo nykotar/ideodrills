@@ -1,13 +1,13 @@
 function Toggle(props) {
   return (
     <label
-      htmlFor={props.name}
+      htmlFor={props.id || props.name}
       className="inline-flex relative items-center cursor-pointer m-2"
     >
       <input
         type="checkbox"
         value=""
-        id={props.name}
+        id={props.id || props.name}
         className="sr-only peer"
         defaultChecked={props.checked}
         onChange={(e) => props.handleChange(e)}

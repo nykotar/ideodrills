@@ -1,10 +1,12 @@
 import "./App.css";
 
 import { FaGithub, FaDiscord, FaReddit } from "react-icons/fa";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Toggle from "./components/Toggle";
 import Badge from "./components/Badge";
 import { useTimer } from "react-timer-hook";
+
+import gsap from "gsap";
 
 function App() {
   const [defaultIdeograms, setDefaultIdeograms] = useState({
@@ -17,11 +19,16 @@ function App() {
     Water: true,
   });
 
+  const [currentIdeogram, setCurrentIdeogram] = useState("");
+
   // Handle toggles
   function handleToggleChange(e) {
     const { id, checked } = e.target;
     setDefaultIdeograms({ ...defaultIdeograms, [id]: checked });
   }
+
+  // Ref for animation
+  const ideogramRef = useRef(null);
 
   // Custom ideograms
   const [customIdeograms, setCustomIdeograms] = useState([]);
@@ -51,16 +58,16 @@ function App() {
   }
 
   // Settings
-
   const [settings, setSettings] = useState({
     voices: [],
     voice: null,
     speed: 2,
     time: 2,
+    displayIdeogram: false,
   });
 
   function handleChange(e) {
-    setSettings({ ...settings, [e.target.id]: e.target.value });
+    setSettings({ ...settings, [e.target.id]: e.target.value || e.target.checked });
   }
 
   // Load voices
@@ -71,15 +78,15 @@ function App() {
     };
   }, []);
 
-  const [speechInterval, setSpeechInterval] = useState(null);
+  const [ideogramInterval, setIdeogramInterval] = useState(null);
 
   const { minutes, seconds, isRunning, pause, restart } = useTimer({
     expiryTimestamp: 1,
-    onExpire: () => clearInterval(speechInterval),
+    onExpire: () => clearInterval(ideogramInterval),
   });
 
   function startDrill() {
-    if (!settings.voice) return;
+    if (!settings.voice && !settings.displayIdeogram) return;
 
     const ideograms = [
       ...customIdeograms,
@@ -90,23 +97,47 @@ function App() {
     time.setSeconds(time.getSeconds() + Number(settings.time) * 60);
     restart(time);
 
-    setSpeechInterval(
+    setIdeogramInterval(
       setInterval(() => {
-        speechSynthesis.cancel();
-        let utterance = new SpeechSynthesisUtterance(
-          ideograms[Math.floor(Math.random() * ideograms.length)].replace(
-            "/",
-            " "
-          )
-        );
-        utterance.voice = settings.voices[settings.voice];
-        speechSynthesis.speak(utterance);
+
+          const ideogram = ideograms[Math.floor(Math.random() * ideograms.length)]
+          setCurrentIdeogram(ideogram);
+
+          // Calling it here is not optimal
+          // it would be better to call this when the value is changed
+          // through an effect. However, if the value is the same
+          // (e.g the same ideogram) it won't trigger the effect.
+          // This seems to work, though.
+          gsap.fromTo(ideogramRef.current, 
+            { opacity: 0, scale: 0.9 }, 
+            { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out", 
+              onComplete: () => {
+                setTimeout(() => {
+                  gsap.to(ideogramRef.current, { opacity: 0, scale: 0.9, duration: 0.5, ease: "expo.in" });
+                }, (settings.speed * 1000) - 1000);
+              }
+            }
+            );
+
+          speechSynthesis.cancel();
+          if (settings.voice) {
+            let utterance = new SpeechSynthesisUtterance(
+              ideogram.replace(
+                "/",
+                " "
+              )
+            );
+            utterance.voice = settings.voices[settings.voice];
+            speechSynthesis.speak(utterance);
+          }
+
       }, parseFloat(settings.speed * 1000))
     );
   }
 
   function stopDrill() {
-    clearInterval(speechInterval);
+    clearInterval(ideogramInterval);
+    setCurrentIdeogram("");
     pause();
   }
 
@@ -201,71 +232,82 @@ function App() {
             </div>
           </div>
           <h1 className="text-xl font-medium mt-4">Settings</h1>
-          <div className="mt-3 mx-2 sm:flex sm:justify-between">
-            <div className="sm:w-1/4">
-              <label
-                htmlFor="voice"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                Voice
-              </label>
-              <select
-                id="voice"
-                className="text-gray-900 text-sm rounded-lg p-2.5 w-full"
-                onChange={handleChange}
-                disabled={isRunning}
-              >
-                <option selected>Choose a voice</option>
-                {settings.voices.map((voice, i) => {
-                  return (
-                    <option value={i} key={i}>
-                      {voice.lang} - {voice.name}
-                    </option>
-                  );
-                })}
-              </select>
+          <div className="mt-3 mx-2 flex flex-col">
+            <div className="sm:flex sm:justify-between">
+              <div className="sm:w-1/4">
+                <label
+                  htmlFor="voice"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Voice
+                </label>
+                <select
+                  id="voice"
+                  className="text-gray-900 text-sm rounded-lg p-2.5 w-full"
+                  onChange={handleChange}
+                  disabled={isRunning}
+                >
+                  <option selected>Choose a voice</option>
+                  {settings.voices.map((voice, i) => {
+                    return (
+                      <option value={i} key={i}>
+                        {voice.lang} - {voice.name}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              <div className="mt-2 sm:mt-0 sm:w-1/4">
+                <label
+                  htmlFor="speed"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Speed
+                </label>
+                <select
+                  id="speed"
+                  className="text-gray-900 text-sm rounded-lg p-2.5 w-full"
+                  onChange={handleChange}
+                  defaultValue={settings.speed}
+                  disabled={isRunning}
+                >
+                  <option value={3}>Slow</option>
+                  <option value={2}>Medium</option>
+                  <option value={1.5}>Fast</option>
+                </select>
+              </div>
+              <div className="mt-2 sm:mt-0 sm:w-1/4">
+                <label
+                  htmlFor="time"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Time (minutes)
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={30}
+                  defaultValue={settings.time}
+                  id="time"
+                  className="rounded-md border-gray-200 shadow-sm text-sm p-2.5 w-full"
+                  onChange={handleChange}
+                  disabled={isRunning}
+                />
+              </div>
             </div>
-            <div className="mt-2 sm:mt-0 sm:w-1/4">
-              <label
-                htmlFor="speed"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                Speed
-              </label>
-              <select
-                id="speed"
-                className="text-gray-900 text-sm rounded-lg p-2.5 w-full"
-                onChange={handleChange}
-                defaultValue={settings.speed}
-                disabled={isRunning}
-              >
-                <option value={3}>Slow</option>
-                <option value={2}>Medium</option>
-                <option value={1.5}>Fast</option>
-              </select>
-            </div>
-            <div className="mt-2 sm:mt-0 sm:w-1/4">
-              <label
-                htmlFor="time"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                Time (minutes)
-              </label>
-              <input
-                type="number"
-                min={1}
-                max={30}
-                defaultValue={settings.time}
-                id="time"
-                className="rounded-md border-gray-200 shadow-sm text-sm p-2.5 w-full"
-                onChange={handleChange}
-                disabled={isRunning}
+            <div className="mt-2 sm:mt-0">
+              <Toggle
+                name="Display ideogram"
+                id="displayIdeogram"
+                checked={settings.displayIdeogram}
+                handleChange={handleChange}
               />
             </div>
           </div>
           {isRunning && (
-            <div className="mt-5">
-              <p className="text-center font-mono font-semibold text-5xl">
+            <div className="mt-5 flex flex-col items-center">
+              {settings.displayIdeogram && (<p className="font-mono font-semibold mb-4 text-5xl" ref={ideogramRef}>{currentIdeogram}</p>)}
+              <p className="font-mono font-semibold text-4xl">
                 {minutes < 10 ? "0" + minutes : minutes}:
                 {seconds < 10 ? "0" + seconds : seconds}
               </p>
