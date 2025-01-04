@@ -9,15 +9,37 @@ import { useTimer } from "react-timer-hook";
 import gsap from "gsap";
 
 function App() {
-  const [defaultIdeograms, setDefaultIdeograms] = useState({
-    Biological: true,
-    Land: true,
-    Manmade: true,
-    "Motion/Energy": true,
-    Natural: true,
-    "Space/Air": true,
-    Water: true,
+  const [defaultIdeograms, setDefaultIdeograms] = useState(() => {
+    const defaultIdeograms = {
+      Biological: true,
+      Land: true,
+      Manmade: true,
+      "Motion/Energy": true,
+      Natural: true,
+      "Space/Air": true,
+      Water: true,
+    }
+
+    // Fetch ideograms from local storage
+    // If there are no ideograms in local storage, use the default ones
+    // And if there are ideogram in the local storage, only use the ones that are in the default ones
+    // This is to prevent errors if the default ideograms are changed
+    const localIdeograms = JSON.parse(localStorage.getItem("ideograms"));
+    if (localIdeograms) {
+      const validIdeograms = Object.keys(defaultIdeograms).reduce((acc, key) => {
+        acc[key] = localIdeograms[key] || false;
+        return acc;
+      }, {});
+
+      return validIdeograms;
+    }
+
+    return defaultIdeograms;
   });
+
+  useEffect(() => {
+    localStorage.setItem("ideograms", JSON.stringify(defaultIdeograms));
+  }, [defaultIdeograms]);
 
   const [currentIdeogram, setCurrentIdeogram] = useState("");
 
@@ -31,7 +53,16 @@ function App() {
   const ideogramRef = useRef(null);
 
   // Custom ideograms
-  const [customIdeograms, setCustomIdeograms] = useState([]);
+  const [customIdeograms, setCustomIdeograms] = useState(() => {
+    const localIdeograms = JSON.parse(localStorage.getItem("customIdeograms"));
+    return localIdeograms || [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("customIdeograms", JSON.stringify(customIdeograms));
+  }, [customIdeograms]);
+
+  // Custom ideogram input
   const [customIdeogram, setCustomIdeogram] = useState("");
 
   function addCustomIdeogram() {
@@ -153,20 +184,20 @@ function App() {
           </a>
           <ul className="flex items-center gap-6 text-2xl">
             <li>
-              <a href='https://ko-fi.com/V7V53DIM0' target='_blank'><img height='36' style={{border:'0px',height:'36px'}} src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+              <a href="https://ko-fi.com/V7V53DIM0" target="_blank" rel="noreferrer"><img height='36' style={{border:'0px',height:'36px'}} src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
             </li>
             <li>
-              <a href="https://github.com/nykotar/ideodrills">
+              <a href="https://github.com/nykotar/ideodrills" target="_blank" rel="noreferrer">
                 <FaGithub />
               </a>
             </li>
             <li>
-              <a href="https://discord.gg/remoteviewing">
+              <a href="https://discord.gg/remoteviewing" target="_blank" rel="noreferrer">
                 <FaDiscord />
               </a>
             </li>
             <li>
-              <a href="https://reddit.com/r/remoteviewing">
+              <a href="https://reddit.com/r/remoteviewing" target="_blank" rel="noreferrer">
                 <FaReddit />
               </a>
             </li>
