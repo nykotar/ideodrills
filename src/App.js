@@ -109,12 +109,18 @@ function App() {
     };
   }, []);
 
-  const [ideogramInterval, setIdeogramInterval] = useState(null);
-
   const { minutes, seconds, isRunning, pause, restart } = useTimer({
     expiryTimestamp: 1,
-    onExpire: () => clearInterval(ideogramInterval),
+    onExpire: () => speechSynthesis.cancel(),
   });
+
+  // Ref to check if the drill is running
+  // This is to make sure the drill stops when the user clicks stop
+  // as the isRunning state is not updated immediately
+  const isRunningRef = useRef(false);
+  useEffect(() => {
+    isRunningRef.current = isRunning;
+  }, [isRunning]);
 
   function startDrill() {
     if (!settings.voice && !settings.displayIdeogram) return;
@@ -127,49 +133,61 @@ function App() {
     const time = new Date();
     time.setSeconds(time.getSeconds() + Number(settings.time) * 60);
     restart(time);
+    isRunningRef.current = true;
 
-    setIdeogramInterval(
-      setInterval(() => {
+    function speakNextIdeogram() {
+      if (!isRunningRef.current) return; // Stop if the drill is no longer running
 
-          const ideogram = ideograms[Math.floor(Math.random() * ideograms.length)]
-          setCurrentIdeogram(ideogram);
+      const ideogram = ideograms[Math.floor(Math.random() * ideograms.length)];
+      setCurrentIdeogram(ideogram);
 
-          // Calling it here is not optimal
-          // it would be better to call this when the value is changed
-          // through an effect. However, if the value is the same
-          // (e.g the same ideogram) it won't trigger the effect.
-          // This seems to work, though.
-          gsap.fromTo(ideogramRef.current, 
-            { opacity: 0, scale: 0.9 }, 
-            { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out", 
-              onComplete: () => {
-                setTimeout(() => {
-                  gsap.to(ideogramRef.current, { opacity: 0, scale: 0.9, duration: 0.5, ease: "expo.in" });
-                }, (settings.speed * 1000) - 1000);
-              }
-            }
-            );
-
-          speechSynthesis.cancel();
-          if (settings.voice) {
-            let utterance = new SpeechSynthesisUtterance(
-              ideogram.replace(
-                "/",
-                " "
-              )
-            );
-            utterance.voice = settings.voices[settings.voice];
-            speechSynthesis.speak(utterance);
+      gsap.fromTo(ideogramRef.current, 
+        { opacity: 0, scale: 0.9 }, 
+        { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out", 
+          onComplete: () => {
+            setTimeout(() => {
+              gsap.to(ideogramRef.current, { opacity: 0, scale: 0.9, duration: 0.5, ease: "expo.in" });
+            }, (settings.speed * 1000) - 1000);
           }
+        }
+      );
 
-      }, parseFloat(settings.speed * 1000))
-    );
+      if (settings.voice) {
+        const utterance = new SpeechSynthesisUtterance(
+          ideogram.replace("/", " ")
+        );
+        utterance.voice = settings.voices[settings.voice];
+        utterance.onend = () => {
+          if (isRunningRef.current) {
+            setTimeout(() => {
+              speakNextIdeogram();
+            }, settings.speed * 1000);
+          }
+        };
+        speechSynthesis.speak(utterance);
+      } else {
+        setTimeout(() => {
+          speakNextIdeogram();
+        }, settings.speed * 1000);
+      }
+    }
+
+    speakNextIdeogram();
   }
 
   function stopDrill() {
-    clearInterval(ideogramInterval);
+    // Update isRunningRef to false
+    isRunningRef.current = false;
+
+    // Cancel any ongoing speech synthesis
+    speechSynthesis.cancel();
+
+    // Reset the timer
     setCurrentIdeogram("");
     pause();
+
+    // Stop any ongoing animations
+    gsap.killTweensOf(ideogramRef.current);
   }
 
   return (
@@ -304,7 +322,9 @@ function App() {
                 >
                   <option value={3}>Slow</option>
                   <option value={2}>Medium</option>
-                  <option value={1.5}>Fast</option>
+                  <option value={1}>Fast</option>
+                  <option value={0.5}>Very fast</option>
+                  <option value={0.2}>Faster</option>
                 </select>
               </div>
               <div className="mt-2 sm:mt-0 sm:w-1/4">
