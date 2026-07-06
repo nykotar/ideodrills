@@ -1,5 +1,6 @@
 name: Deploy
-
+permissions:
+  contents: write
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
@@ -31,5 +32,5 @@ jobs:
       - name: deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
