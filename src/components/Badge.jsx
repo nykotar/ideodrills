@@ -1,9 +1,9 @@
 function Badge(props) {
   return (
-    <strong className="inline-flex items-center rounded-full border border-black border-current px-5 py-1.5 text-sm font-medium tracking-wide text-black m-1">
+    <strong className="inline-flex items-center rounded-full border border-hairline px-4 py-1.5 text-xs tracking-wide text-ink m-1">
       {props.name}
       <button
-        className="ml-2.5 -mr-2.5 rounded-full bg-black text-white p-1 transition-opacity hover:opacity-75 focus:outline-none focus:ring"
+        className="ml-2.5 -mr-2 rounded-full bg-ink text-paper p-1 transition-opacity hover:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
         type="button"
         onClick={() => props.onRemove(props.name)}
       >

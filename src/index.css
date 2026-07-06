@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --paper: 255 255 255;
+  --ink: 10 10 10;
+  --hairline: 228 228 228;
+  --muted: 107 107 107;
+}
+
+.dark {
+  --paper: 10 10 10;
+  --ink: 250 250 250;
+  --hairline: 38 38 38;
+  --muted: 138 138 138;
+}
+
+body {
+  @apply bg-paper text-ink font-mono;
+}
