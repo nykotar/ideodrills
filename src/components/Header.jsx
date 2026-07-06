@@ -9,7 +9,7 @@ function Header() {
     <header className="border-b border-hairline">
       <nav className="mx-auto flex max-w-3xl items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
         <a
-          href="/"
+          href="/ideodrills"
           className="text-sm font-semibold tracking-[0.2em] uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
         >
           IdeoDrills
